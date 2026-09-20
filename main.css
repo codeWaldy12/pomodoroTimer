@@ -204,7 +204,7 @@ input[type="range"]::-webkit-slider-thumb {
 span.reglage__minute,
 span.reglage__cycle {
     padding-left: 10px;
-    min-width: 3.4rem;   
+    min-width: 3.4rem;
     width: auto;
     flex-shrink: 0;
     white-space: nowrap;
@@ -256,4 +256,44 @@ span.reglage__cycle {
 
 .reglage__import input[type="file"]::file-selector-button:hover {
     border-color: var(--clr-sapin);
+}
+
+@media screen and (min-width: 900px) {
+
+    .timer__anneau {
+        width: min(30vw, 420px);
+    }
+
+    .timer__decompte {
+        font-size: clamp(2.2rem, 1rem + 3vw, 3.2rem);
+    }
+
+    section.reglage {
+        padding: 40px clamp(25px, 5vw, 100px);
+    }
+
+    section.reglage h1 {
+        font-size: clamp(1.3rem, 1rem + 1vw, 1.8rem);
+    }
+
+    .reglage__label {
+        font-size: clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        height: 24px;
+        width: 24px;
+        margin-top: -8.5px;
+    }
+
+    .reglage__input select {
+        width: 50%;
+        font-size: clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem);
+        padding: clamp(8px, 0.6vw, 14px) clamp(10px, 1vw, 18px);
+    }
+
+    .reglage__import input[type="file"] {
+        width: 100%;
+        font-size: clamp(0.85rem, 0.75rem + 0.3vw, 1rem);
+    }
 }
