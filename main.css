@@ -31,6 +31,27 @@
     }
 }
 
+@media (prefers-reduced-motion: reduce) {
+
+    body,
+    .timer,
+    section.reglage {
+        animation: none;
+    }
+}
+
+@keyframes apparition {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -54,6 +75,7 @@ body::-webkit-scrollbar {
     text-align: center;
     max-width: 480px;
     margin: 0 auto;
+    animation: apparition 0.6s ease-out backwards;
 }
 
 .timer__anneau {
@@ -138,6 +160,8 @@ div.timer__btns {
 section.reglage {
     background-color: var(--clr-ligne);
     padding: 25px;
+    animation: apparition 0.6s ease-out backwards;
+    animation-delay: 0.15s;
 }
 
 section.reglage h1 {
