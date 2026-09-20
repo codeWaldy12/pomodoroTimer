@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gerer son temps avec pomodoro timer">
+    <link rel="shortcut icon" href="assets/icons/pomodorotimer.svg" type="image/svg">
+    <link rel="stylesheet" href="main.css">
+    <title>Pomodoro Timer</title>
+</head>
+<body>
+    <main>
+
+        <section class="timer">
+            <div class="timer__anneau">
+                <p class="timer__decompte">25:00</p>
+                <p class="timer__restant">restant</p>
+            </div>
+
+            <div class="timer__cycle">
+                <ul class="timer__etat">
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                    <li></li>
+                </ul>
+                <p>
+                    Cycle <span class="cycle__count">0</span> 
+                    sur 4 avant la pause longue
+                </p>
+            </div>
+
+            <div class="timer__btns">
+                <button type="button" id="btn-pause" class="timer__btn">Pause</button>
+                <button type="button" id="btn-reset" class="timer__btn">Réinitialiser</button>
+            </div>
+        </section>
+
+        <section class="reglage">
+
+            <h1>Réglages</h1>
+
+            <!-- durée d'une session de travail  -->
+
+            <div class="reglage__input">
+                <div class="reglage__input-flex">
+                    <label for="session" class="reglage__label">Session de travail</label>
+                    <input type="range" name="session_travail" id="session" max="60">
+                </div>
+                <span class="reglage__minute">20 min</span>
+            </div>
+
+            <!-- durée d'une pause courte  -->
+
+            <div class="reglage__input">
+                <div class="reglage__input-flex">
+                    <label for="pause-courte" class="reglage__label">Pause courte</label>
+                    <input type="range" name="pause_courte" id="pause-courte" max="20">
+                </div>
+                <span class="reglage__minute">20 min</span>
+            </div>
+
+            <!-- durée d'une pause longue  -->
+
+            <div class="reglage__input">
+                <div class="reglage__input-flex">
+                    <label for="pause-longue" class="reglage__label">Pause longue</label>
+                    <input type="range" name="pause_longue" id="pause-longue" max="40">
+                </div>
+                <span class="reglage__minute">20 min</span>
+            </div>
+
+            <!-- durée du cycle de travail  -->
+
+            <div class="reglage__input">
+                <div class="reglage__input-flex">
+                    <label for="cycle_avant_pause_longue" class="reglage__label">nombre de cycle</label>
+                    <input type="range" name="cycle_avant_pause_longue" id="cycle_avant_pause_longue" max="8">
+                </div>
+                <span class="reglage__cycle">8 cycle</span>
+            </div>
+
+            <div class="reglage__input">
+                <label for="choisir-sonnerie" class="reglage__label">Son de fin de phase</label>
+                <select name="son_alerte" id="choisir-sonnerie">
+                    <option value="piano-sonnerie">Piano (par défaut)</option>
+                    <option value="flute-sonnerie">Flûte</option>
+                    <option value="importer-sonnerie">Importer un son…</option>
+                </select>
+
+                <div class="reglage__import" id="importZone" hidden>
+                    <input type="file" name="importer_son" id="importer-son" accept="audio/*">
+                </div>
+            </div>
+            
+        </section>
+    </main>
+</body>
+</html>
