@@ -26,12 +26,12 @@
                 </ul>
                 <p>
                     Cycle <span class="cycle__count">0</span> 
-                    sur 4 avant la pause longue
+                    sur <span class="nbr__cycle">4</span> avant la pause longue
                 </p>
             </div>
 
             <div class="timer__btns">
-                <button type="button" id="btn-pause" class="timer__btn timer__btn-primaire">Pause</button>
+                <button type="button" id="btn-demarer-pause" class="timer__btn timer__btn-primaire">Demarer</button>
                 <button type="button" id="btn-reset" class="timer__btn timer__btn-fantome">Réinitialiser</button>
             </div>
         </section>
@@ -45,9 +45,9 @@
             <div class="reglage__input">
                 <div class="reglage__input-flex">
                     <label for="session" class="reglage__label">Session de travail</label>
-                    <input type="range" name="session_travail" id="session" max="60">
+                    <input type="range" min="25" value="25" name="session_travail" id="session" max="60">
                 </div>
-                <span class="reglage__minute">20 min</span>
+                <span class="reglage__minute">25 min</span>
             </div>
 
             <!-- durée d'une pause courte  -->
@@ -55,9 +55,9 @@
             <div class="reglage__input">
                 <div class="reglage__input-flex">
                     <label for="pause-courte" class="reglage__label">Pause courte</label>
-                    <input type="range" name="pause_courte" id="pause-courte" max="20">
+                    <input type="range" min="5" value="5" max="20" name="pause_courte" id="pause-courte">
                 </div>
-                <span class="reglage__minute">20 min</span>
+                <span class="reglage__minute">5 min</span>
             </div>
 
             <!-- durée d'une pause longue  -->
@@ -65,9 +65,9 @@
             <div class="reglage__input">
                 <div class="reglage__input-flex">
                     <label for="pause-longue" class="reglage__label">Pause longue</label>
-                    <input type="range" name="pause_longue" id="pause-longue" max="40">
+                    <input type="range" min="15" value="15" max="40" name="pause_longue" id="pause-longue">
                 </div>
-                <span class="reglage__minute">20 min</span>
+                <span class="reglage__minute">15 min</span>
             </div>
 
             <!-- durée du cycle de travail  -->
@@ -75,9 +75,9 @@
             <div class="reglage__input">
                 <div class="reglage__input-flex">
                     <label for="cycle_avant_pause_longue" class="reglage__label">nombre de cycle</label>
-                    <input type="range" name="cycle_avant_pause_longue" id="cycle_avant_pause_longue" max="8">
+                    <input type="range" min="4" value="4" max="8" name="cycle_avant_pause_longue" id="cycle_avant_pause_longue">
                 </div>
-                <span class="reglage__cycle">8 cycle</span>
+                <span class="reglage__cycle">4 cycle</span>
             </div>
 
             <div class="reglage__input">
@@ -95,5 +95,7 @@
             
         </section>
     </main>
+
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
