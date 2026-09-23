@@ -140,7 +140,7 @@ export function decompte() {
             indicateurDePhase(dureeSessionTravail, "Travail", cycleActuel);
             reinitialiserPastilles();
         }
-    }, 10);
+    }, 1000);
 }
 
 // alterner entrer demarrer et mettre en pause le decompte 
