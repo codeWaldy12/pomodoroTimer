@@ -13,16 +13,14 @@
 
         <section class="timer">
             <div class="timer__anneau">
+                <span class="timer__indicateur">Travail</span>
                 <p class="timer__decompte">25:00</p>
-                <p class="timer__restant">restant</p>
+                <p class="timer__restant">Restant</p>
             </div>
 
             <div class="timer__cycle">
                 <ul class="timer__etat">
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
+                    
                 </ul>
                 <p>
                     Cycle <span class="cycle__count">0</span> 
@@ -47,7 +45,7 @@
                     <label for="session" class="reglage__label">Session de travail</label>
                     <input type="range" min="25" value="25" name="session_travail" id="session" max="60">
                 </div>
-                <span class="reglage__minute">25 min</span>
+                <span class="reglage__minute" id="reglage__minute-session">25 min</span>
             </div>
 
             <!-- durée d'une pause courte  -->
@@ -57,7 +55,7 @@
                     <label for="pause-courte" class="reglage__label">Pause courte</label>
                     <input type="range" min="5" value="5" max="20" name="pause_courte" id="pause-courte">
                 </div>
-                <span class="reglage__minute">5 min</span>
+                <span class="reglage__minute" id="reglage__minute-courte">5 min</span>
             </div>
 
             <!-- durée d'une pause longue  -->
@@ -67,7 +65,7 @@
                     <label for="pause-longue" class="reglage__label">Pause longue</label>
                     <input type="range" min="15" value="15" max="40" name="pause_longue" id="pause-longue">
                 </div>
-                <span class="reglage__minute">15 min</span>
+                <span class="reglage__minute" id="reglage__minute-longue">15 min</span>
             </div>
 
             <!-- durée du cycle de travail  -->

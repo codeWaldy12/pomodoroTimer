@@ -97,7 +97,7 @@ body::-webkit-scrollbar {
     margin: 0;
 }
 
-.timer__restant {
+.timer__restant, .timer__indicateur {
     color: var(--clr-second);
     font-size: 12px;
     margin: 4px 0 0;
@@ -124,8 +124,8 @@ div.timer__cycle p {
     font-size: 13px;
 }
 
-.timer__etat-termine {
-    color: var(--clr-sapin);
+li.timer__etat-termine {
+    background-color: var(--clr-or);
 }
 
 div.timer__btns {
