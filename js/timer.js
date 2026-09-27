@@ -124,7 +124,6 @@ export function decompte() {
     pomodoroTimer = setInterval(() => {
         tempsRestant--;
         affichageTemps(tempsRestant);
-        mettreAJourPastilles(cycleActuel);
         if (phaseActuelle === "Travail" && tempsRestant <= 0) {
             cycleActuel++;
             mettreAJourPastilles(cycleActuel);
@@ -169,8 +168,3 @@ btnReset.addEventListener("click", () => {
     indicateurDePhase(dureeSessionTravail, "Travail", cycleActuel);
     reinitialiserPastilles();
 });
-
-
-
-
-
