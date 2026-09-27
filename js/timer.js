@@ -148,10 +148,12 @@ btnDemarrerPause.addEventListener("click", () => {
     if (pomodoroTimer === null) {
         decompte();
         btnDemarrerPause.innerText = "Pause";
+        document.querySelectorAll("input, #choisir-sonnerie").forEach(entrer => entrer.disabled = true)
     } else {
         clearInterval(pomodoroTimer);
         pomodoroTimer = null;
         btnDemarrerPause.innerText = "Démarrer";
+        document.querySelectorAll("input, #choisir-sonnerie").forEach(entrer => entrer.disabled = false)
     }
 });
 
