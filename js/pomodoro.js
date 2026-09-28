@@ -29,6 +29,11 @@ let cycleRequis = 4;
 const sons = {
     "piano-sonnerie": "assets/sounds/default-piano.wav",
     "flute-sonnerie": "assets/sounds/flute.wav",
+    "alarme-sonnerie": "assets/sounds/alarm.wav",
+    "laser-sonnerie": "assets/sounds/laser.wav",
+    "game-over-sonnerie": "assets/sounds/game-over.wav", 
+    "intro-sonnerie": "assets/sounds/intro.wav",
+    "telephone-sonnerie": "assets/sounds/telephone.wav" 
 }
 let sonChoisi = sons["piano-sonnerie"];
 const son = new Audio(sonChoisi);
