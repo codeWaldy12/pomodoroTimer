@@ -1,3 +1,5 @@
+import {storage, getInformations} from './storage.js';
+
 export const timerDecompte = document.querySelector(".timer__decompte");
 export const timerCycleCount = document.querySelector(".cycle__count");
 export const nbrCycleCount = document.querySelector(".nbr__cycle");
@@ -14,6 +16,8 @@ export const reglageMinuteSession = document.querySelector("#reglage__minute-ses
 export const reglageMinuteCourte = document.querySelector("#reglage__minute-courte");
 export const reglageMinuteLongue = document.querySelector("#reglage__minute-longue");
 export const reglageCycle = document.querySelector(".reglage__cycle");
+export const choisirSonnerie = document.querySelector("#choisir-sonnerie");
+export const sonnerieImport = document.querySelector("#importer-son");
 
 let valueInput = null;
 let dureeSessionTravail = 1500;
@@ -22,6 +26,12 @@ let dureePauseCourte = 300;
 let dureePauseLongue = 900;
 let cycleActuel = 0;
 let cycleRequis = 4;
+const sons = {
+    "piano-sonnerie": "assets/sounds/default-piano.wav",
+    "flute-sonnerie": "assets/sounds/flute.wav",
+}
+let sonChoisi = sons["piano-sonnerie"];
+const son = new Audio(sonChoisi);
 
 export function affichageTemps(temps) {
     return timerDecompte.textContent = (Math.floor(temps / 60)).toString().padStart(2, "0") + ":" + (temps % 60).toString().padStart(2, "0")
@@ -63,49 +73,90 @@ function enregistrementPreference(element, callback) {
 
 // sauvegardder de la durée de la session de travail 
 
-enregistrementPreference(session, (valeur) => {
+export function definirDureeSessionTravail(valeur) {
     dureeSessionTravail = valeur;
-    reglageMinuteSession.textContent = Math.floor(dureeSessionTravail / 60) + " min";
+    session.value = Math.round(valeur / 60);
+    reglageMinuteSession.textContent = Math.round(valeur / 60) + " min";
 
     if (phaseActuelle === "Travail") {
         tempsRestant = dureeSessionTravail;
         affichageTemps(tempsRestant);
     }
+}
+
+enregistrementPreference(session, (valeur) => {
+    definirDureeSessionTravail(valeur);
 
     if (pomodoroTimer !== null) {
         clearInterval(pomodoroTimer);
         pomodoroTimer = null;
         btnDemarrerPause.innerText = "Démarrer";
     }
+
+    storage("dureeSessionTravail", dureeSessionTravail, "local");
 });
 
 // sauvegarder la durée de la Pause courte 
 
-enregistrementPreference(inputPauseCourte, (valeur) => {
+export function definirDureePauseCourte(valeur) {
     dureePauseCourte = valeur;
-    reglageMinuteCourte.textContent = Math.floor(dureePauseCourte / 60) + " min";
+    inputPauseCourte.value = Math.round(valeur / 60);
+    reglageMinuteCourte.textContent = Math.round(valeur / 60) + " min";
+}
+
+enregistrementPreference(inputPauseCourte, (valeur) => {
+    definirDureePauseCourte(valeur);
+    storage("dureePauseCourte", dureePauseCourte, "local");
 });
 
 // sauvegarder la dureé de la Pause longue 
 
-enregistrementPreference(inputPauseLongue, (valeur) => {
+export function definirDureePauseLongue(valeur) {
     dureePauseLongue = valeur;
-    reglageMinuteLongue.textContent = Math.floor(dureePauseLongue / 60) + " min";
+    inputPauseLongue.value = Math.round(valeur / 60);
+    reglageMinuteLongue.textContent = Math.round(valeur / 60) + " min";
+}
+
+enregistrementPreference(inputPauseLongue, (valeur) => {
+    definirDureePauseLongue(valeur);
+    storage("dureePauseLongue", dureePauseLongue, "local");
 });
 
 // sauvegarder le maximun de cycle avant une Pause longue 
 
+export function definirDureeCycle(valeur) {
+    cycleRequis = valeur;
+    inputCycleAvantPauseLongue.value = valeur;
+    nbrCycleCount.textContent = valeur;
+    reglageCycle.textContent = valeur + " cycle";
+    genererPastilles(valeur);
+}
+
 inputCycleAvantPauseLongue.addEventListener("change", (e) => {
-    cycleRequis = +e.currentTarget.value;
-    nbrCycleCount.textContent = cycleRequis;
-    reglageCycle.textContent = cycleRequis + " cycle";
-    genererPastilles(cycleRequis);
+    definirDureeCycle(+e.currentTarget.value);
+    storage("cycleRequis", cycleRequis, "local");
+});
+
+// selectionner la sonnerie 
+
+export function definirSon(valeur) {
+    sonChoisi = valeur;
+    son.src = sons[valeur];
+    choisirSonnerie.value = valeur;
+}
+
+choisirSonnerie.addEventListener("change", e => {
+    const valeur = e.currentTarget.value;
+    definirSon(valeur);
+    storage("sonnerie", valeur, "local");
 });
 
 let pomodoroTimer = null;
 let phaseActuelle = "Travail";
 
-function indicateurDePhase(duree, phase, cycle) {
+// indique la phase actuelle du pomodoro 
+
+export function indicateurDePhase(duree, phase, cycle) {
     btnDemarrerPause.innerText = "Démarrer";
 
     clearInterval(pomodoroTimer);
@@ -118,6 +169,11 @@ function indicateurDePhase(duree, phase, cycle) {
     timerIndicateur.textContent = phaseActuelle;
 
     timerCycleCount.textContent = cycle;
+
+    son.play().catch(erreur => {
+        console.error("Impossible de jouer le son :", erreur);
+    });
+
 }
 
 export function decompte() {
