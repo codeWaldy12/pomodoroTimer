@@ -1,6 +1,6 @@
 
 import * as Storage from './storage.js';
-import * as Timer from './pomodoro.js';
+import * as Pomodoro from './pomodoro.js';
 
 
 function restaurer(cle, callback) {
@@ -10,13 +10,13 @@ function restaurer(cle, callback) {
     }
 }
 
-restaurer("dureeSessionTravail", Timer.definirDureeSessionTravail);
-restaurer("dureePauseCourte", Timer.definirDureePauseCourte);
-restaurer("dureePauseLongue", Timer.definirDureePauseLongue);
-restaurer("cycleRequis", Timer.definirDureeCycle);
-restaurer("sonnerie", Timer.definirSon);
+restaurer("dureeSessionTravail", Pomodoro.definirDureeSessionTravail);
+restaurer("dureePauseCourte", Pomodoro.definirDureePauseCourte);
+restaurer("dureePauseLongue", Pomodoro.definirDureePauseLongue);
+restaurer("cycleRequis", Pomodoro.definirDureeCycle);
+restaurer("sonnerie", Pomodoro.definirSon);
 
 const etatSauvegarde = Storage.getInformations("etat", "session");
 if (etatSauvegarde !== null) {
-    Timer.definirEtat(etatSauvegarde);
+    Pomodoro.definirEtat(etatSauvegarde);
 }

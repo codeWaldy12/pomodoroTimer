@@ -1,63 +1,88 @@
-import {storage, getInformations} from './storage.js';
+import { storage } from './storage.js';
 
-export const timerDecompte = document.querySelector(".timer__decompte");
-export const timerCycleCount = document.querySelector(".cycle__count");
-export const nbrCycleCount = document.querySelector(".nbr__cycle");
-export const timerIndicateur = document.querySelector(".timer__indicateur");
-export const timerEtat = document.querySelector(".timer__etat");
-export let pastilles = document.querySelectorAll(".timer__etat li");
-export const btnDemarrerPause = document.querySelector("#btn-demarrer-pause");
-export const btnReset = document.querySelector("#btn-reset");
-export const session = document.querySelector("#session")
-export const inputPauseCourte = document.querySelector("#pause-courte");
-export const inputPauseLongue = document.querySelector("#pause-longue");
-export const inputCycleAvantPauseLongue = document.querySelector("#cycle_avant_pause_longue");
-export const reglageMinuteSession = document.querySelector("#reglage__minute-session");
-export const reglageMinuteCourte = document.querySelector("#reglage__minute-courte");
-export const reglageMinuteLongue = document.querySelector("#reglage__minute-longue");
-export const reglageCycle = document.querySelector(".reglage__cycle");
-export const choisirSonnerie = document.querySelector("#choisir-sonnerie");
-export const sonnerieImport = document.querySelector("#importer-son");
+// affichage du minuteur
+const timerDecompte = document.querySelector(".timer__decompte");
+const timerIndicateur = document.querySelector(".timer__indicateur");
+const timerCycleCount = document.querySelector(".cycle__count");
+const nbrCycleCount = document.querySelector(".nbr__cycle");
+const timerEtat = document.querySelector(".timer__etat");
+let pastilles = document.querySelectorAll(".timer__etat li");
 
-let valueInput = null;
-let dureeSessionTravail = 1500;
-let tempsRestant = 1500;
-let dureePauseCourte = 300;
-let dureePauseLongue = 900;
-let cycleActuel = 0;
-let cycleRequis = 4;
+// boutons d'action
+const btnDemarrerPause = document.querySelector("#btn-demarrer-pause");
+const btnReset = document.querySelector("#btn-reset");
+
+// réglages : champs
+const session = document.querySelector("#session");
+const inputPauseCourte = document.querySelector("#pause-courte");
+const inputPauseLongue = document.querySelector("#pause-longue");
+const inputCycleAvantPauseLongue = document.querySelector("#cycle_avant_pause_longue");
+const choisirSonnerie = document.querySelector("#choisir-sonnerie");
+
+// réglages : textes affichés à côté des champs
+const reglageMinuteSession = document.querySelector("#reglage__minute-session");
+const reglageMinuteCourte = document.querySelector("#reglage__minute-courte");
+const reglageMinuteLongue = document.querySelector("#reglage__minute-longue");
+const reglageCycle = document.querySelector(".reglage__cycle");
+
+
+// sonneries disponibles
+
 const sons = {
     "piano-sonnerie": "assets/sounds/default-piano.wav",
     "flute-sonnerie": "assets/sounds/flute.wav",
     "alarme-sonnerie": "assets/sounds/alarm.wav",
     "laser-sonnerie": "assets/sounds/laser.wav",
-    "game-over-sonnerie": "assets/sounds/game-over.wav", 
+    "game-over-sonnerie": "assets/sounds/game-over.wav",
     "intro-sonnerie": "assets/sounds/intro.wav",
-    "telephone-sonnerie": "assets/sounds/telephone.wav" 
-}
-let sonChoisi = sons["piano-sonnerie"];
-const son = new Audio(sonChoisi);
+    "telephone-sonnerie": "assets/sounds/telephone.wav"
+};
 
-export function affichageTemps(temps) {
-    return timerDecompte.textContent = (Math.floor(temps / 60)).toString().padStart(2, "0") + ":" + (temps % 60).toString().padStart(2, "0")
+// réglages de l'utilisateur 
+
+let dureeSessionTravail = 1500;
+let dureePauseCourte = 300;
+let dureePauseLongue = 900;
+let cycleRequis = 4;
+let sonChoisi = "piano-sonnerie";
+
+// état de la session en cours 
+
+let tempsRestant = dureeSessionTravail;
+let phaseActuelle = "Travail";
+let cycleActuel = 0;
+
+let pomodoroTimer = null;
+
+const son = new Audio(sons[sonChoisi]);
+
+function enMinutes(secondes) {
+    return Math.round(secondes / 60);
 }
 
-// generer les pastilles en fonction du cycle choisi par l'utilisateur 
+function affichageTemps(temps) {
+    timerDecompte.textContent =
+        Math.floor(temps / 60).toString().padStart(2, "0") + ":" +
+        (temps % 60).toString().padStart(2, "0");
+}
+
+// génère les pastilles, puis recolore celles des cycles déjà terminés
 
 function genererPastilles(nombre) {
     timerEtat.innerHTML = "";
 
     for (let i = 0; i < nombre; i++) {
-        const li = document.createElement("li");
-        timerEtat.appendChild(li);
+        timerEtat.appendChild(document.createElement("li"));
     }
 
     pastilles = timerEtat.querySelectorAll("li");
+
+    for (let i = 1; i <= cycleActuel; i++) {
+        mettreAJourPastilles(i);
+    }
 }
 
-genererPastilles(cycleRequis);
-
-// colorer une pastille lorsqu'une session de travail est terminée 
+// colore la pastille d'un cycle terminé
 
 function mettreAJourPastilles(cycle) {
     const pastilleActuelle = pastilles[cycle - 1];
@@ -66,22 +91,30 @@ function mettreAJourPastilles(cycle) {
     }
 }
 
-// enregistrer les prefereences de durées de l'utilisateur 
+function reinitialiserPastilles() {
+    pastilles.forEach(li => li.classList.remove("timer__etat-termine"));
+}
 
-function enregistrementPreference(element, callback) {
-    element.addEventListener("change", e => {
-        valueInput = +e.currentTarget.value;
-        const valeurEnregistree = valueInput * 60;
-        callback(valeurEnregistree);
+// bloque ou débloque les champs de réglages
+
+function verrouillerReglages(verrouille) {
+    document.querySelectorAll("input, #choisir-sonnerie").forEach(champ => {
+        champ.disabled = verrouille;
     });
 }
 
-// sauvegardder de la durée de la session de travail 
+function enregistrementPreference(element, callback) {
+    element.addEventListener("change", e => {
+        callback(+e.currentTarget.value * 60);
+    });
+}
+
+// session de travail 
 
 export function definirDureeSessionTravail(valeur) {
     dureeSessionTravail = valeur;
-    session.value = Math.round(valeur / 60);
-    reglageMinuteSession.textContent = Math.round(valeur / 60) + " min";
+    session.value = enMinutes(valeur);
+    reglageMinuteSession.textContent = enMinutes(valeur) + " min";
 
     if (phaseActuelle === "Travail") {
         tempsRestant = dureeSessionTravail;
@@ -91,22 +124,20 @@ export function definirDureeSessionTravail(valeur) {
 
 enregistrementPreference(session, (valeur) => {
     definirDureeSessionTravail(valeur);
-
-    if (pomodoroTimer !== null) {
-        clearInterval(pomodoroTimer);
-        pomodoroTimer = null;
-        btnDemarrerPause.innerText = "Démarrer";
-    }
-
     storage("dureeSessionTravail", dureeSessionTravail, "local");
 });
 
-// sauvegarder la durée de la Pause courte 
+// pause courte
 
 export function definirDureePauseCourte(valeur) {
     dureePauseCourte = valeur;
-    inputPauseCourte.value = Math.round(valeur / 60);
-    reglageMinuteCourte.textContent = Math.round(valeur / 60) + " min";
+    inputPauseCourte.value = enMinutes(valeur);
+    reglageMinuteCourte.textContent = enMinutes(valeur) + " min";
+
+    if (phaseActuelle === "Pause courte") {
+        tempsRestant = dureePauseCourte;
+        affichageTemps(tempsRestant);
+    }
 }
 
 enregistrementPreference(inputPauseCourte, (valeur) => {
@@ -114,12 +145,17 @@ enregistrementPreference(inputPauseCourte, (valeur) => {
     storage("dureePauseCourte", dureePauseCourte, "local");
 });
 
-// sauvegarder la dureé de la Pause longue 
+// pause longue 
 
 export function definirDureePauseLongue(valeur) {
     dureePauseLongue = valeur;
-    inputPauseLongue.value = Math.round(valeur / 60);
-    reglageMinuteLongue.textContent = Math.round(valeur / 60) + " min";
+    inputPauseLongue.value = enMinutes(valeur);
+    reglageMinuteLongue.textContent = enMinutes(valeur) + " min";
+
+    if (phaseActuelle === "Pause longue") {
+        tempsRestant = dureePauseLongue;
+        affichageTemps(tempsRestant);
+    }
 }
 
 enregistrementPreference(inputPauseLongue, (valeur) => {
@@ -127,7 +163,7 @@ enregistrementPreference(inputPauseLongue, (valeur) => {
     storage("dureePauseLongue", dureePauseLongue, "local");
 });
 
-// sauvegarder le maximun de cycle avant une Pause longue 
+// nombre de cycles avant la pause longue 
 
 export function definirDureeCycle(valeur) {
     cycleRequis = valeur;
@@ -142,26 +178,25 @@ inputCycleAvantPauseLongue.addEventListener("change", (e) => {
     storage("cycleRequis", cycleRequis, "local");
 });
 
-// selectionner la sonnerie 
+// son de fin de phase
 
 export function definirSon(valeur) {
+    if (!sons[valeur]) return;
+
     sonChoisi = valeur;
     son.src = sons[valeur];
     choisirSonnerie.value = valeur;
 }
 
 choisirSonnerie.addEventListener("change", e => {
-    const valeur = e.currentTarget.value;
-    definirSon(valeur);
-    storage("sonnerie", valeur, "local");
+    definirSon(e.currentTarget.value);
+    storage("sonnerie", sonChoisi, "local");
 });
 
-let pomodoroTimer = null;
-let phaseActuelle = "Travail";
+// basculer sur une nouvelle phase 
 
-// indique la phase actuelle du pomodoro 
-
-export function indicateurDePhase(duree, phase, cycle) {
+function indicateurDePhase(duree, phase, cycle) {
+    verrouillerReglages(false);
     btnDemarrerPause.innerText = "Démarrer";
 
     clearInterval(pomodoroTimer);
@@ -174,8 +209,9 @@ export function indicateurDePhase(duree, phase, cycle) {
     timerIndicateur.textContent = phaseActuelle;
 
     timerCycleCount.textContent = cycle;
-
 }
+
+// fin d'une phase 
 
 function finDePhase(duree, phase, cycle) {
     son.play().catch(erreur => {
@@ -184,7 +220,9 @@ function finDePhase(duree, phase, cycle) {
     indicateurDePhase(duree, phase, cycle);
 }
 
-export function decompte() {
+function decompte() {
+    if (pomodoroTimer !== null) return;
+
     pomodoroTimer = setInterval(() => {
         tempsRestant--;
         affichageTemps(tempsRestant);
@@ -192,7 +230,8 @@ export function decompte() {
         if (phaseActuelle === "Travail" && tempsRestant <= 0) {
             cycleActuel++;
             mettreAJourPastilles(cycleActuel);
-            if (cycleActuel !== cycleRequis) {
+
+            if (cycleActuel < cycleRequis) {
                 finDePhase(dureePauseCourte, "Pause courte", cycleActuel);
             } else {
                 finDePhase(dureePauseLongue, "Pause longue", cycleActuel);
@@ -204,31 +243,25 @@ export function decompte() {
             finDePhase(dureeSessionTravail, "Travail", cycleActuel);
             reinitialiserPastilles();
         }
-    }, 1000);
+    }, 1); // TODO : remettre 1000 avant la mise en production
 }
 
-// alterner entrer demarrer et mettre en pause le decompte 
+// alterne entre démarrer et mettre en pause
 
 btnDemarrerPause.addEventListener("click", () => {
     if (pomodoroTimer === null) {
         decompte();
         btnDemarrerPause.innerText = "Pause";
-        document.querySelectorAll("input, #choisir-sonnerie").forEach(entrer => entrer.disabled = true)
+        verrouillerReglages(true);
     } else {
         clearInterval(pomodoroTimer);
         pomodoroTimer = null;
         btnDemarrerPause.innerText = "Démarrer";
-        document.querySelectorAll("input, #choisir-sonnerie").forEach(entrer => entrer.disabled = false)
+        verrouillerReglages(false);
     }
 });
 
-// réinitialiser tout le timer a la derniere preference sauvegardée
-
-function reinitialiserPastilles() {
-    document.querySelectorAll(".timer__etat li").forEach(li => {
-        li.classList.remove("timer__etat-termine");
-    });
-}
+// remet tout à zéro, sur la dernière durée de travail choisie
 
 btnReset.addEventListener("click", () => {
     cycleActuel = 0;
@@ -236,11 +269,14 @@ btnReset.addEventListener("click", () => {
     reinitialiserPastilles();
 });
 
-// sauvegarder la session de l'utilisateur au moment de la fermeture ou du rechargement de la page 
+// sauvegarde l'état juste avant la fermeture ou le rechargement de la page
 
 window.addEventListener("beforeunload", () => {
     storage("etat", { tempsRestant, phaseActuelle, cycleActuel }, "session");
+    verrouillerReglages(false);
 });
+
+// remet en place l'état sauvegardé 
 
 export function definirEtat(etat) {
     tempsRestant = etat.tempsRestant;
@@ -256,3 +292,5 @@ export function definirEtat(etat) {
         mettreAJourPastilles(i);
     }
 }
+
+genererPastilles(cycleRequis);
