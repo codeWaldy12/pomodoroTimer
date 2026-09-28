@@ -16,6 +16,5 @@ Chaque durée, le nombre de cycles et le son de fin de phase sont réglables dep
 
 - Démarrer, mettre en pause et réinitialiser le minuteur
 - Réglage des durées de chaque phase et du nombre de cycles
-- Notification sonore en fin de phase, avec choix du son ou import d'un fichier personnel
-- Notification visuelle en complément du son
+- Notification sonore en fin de phase, avec un choix possible de plus de 4 sons
 - Sauvegarde des préférences et de la session en cours
