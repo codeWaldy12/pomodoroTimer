@@ -170,29 +170,33 @@ export function indicateurDePhase(duree, phase, cycle) {
 
     timerCycleCount.textContent = cycle;
 
+}
+
+function finDePhase(duree, phase, cycle) {
     son.play().catch(erreur => {
         console.error("Impossible de jouer le son :", erreur);
     });
-
+    indicateurDePhase(duree, phase, cycle);
 }
 
 export function decompte() {
     pomodoroTimer = setInterval(() => {
         tempsRestant--;
         affichageTemps(tempsRestant);
+
         if (phaseActuelle === "Travail" && tempsRestant <= 0) {
             cycleActuel++;
             mettreAJourPastilles(cycleActuel);
             if (cycleActuel !== cycleRequis) {
-                indicateurDePhase(dureePauseCourte, "Pause courte", cycleActuel);
+                finDePhase(dureePauseCourte, "Pause courte", cycleActuel);
             } else {
-                indicateurDePhase(dureePauseLongue, "Pause longue", cycleActuel);
+                finDePhase(dureePauseLongue, "Pause longue", cycleActuel);
             }
         } else if (phaseActuelle === "Pause courte" && tempsRestant <= 0) {
-            indicateurDePhase(dureeSessionTravail, "Travail", cycleActuel);
+            finDePhase(dureeSessionTravail, "Travail", cycleActuel);
         } else if (phaseActuelle === "Pause longue" && tempsRestant <= 0) {
             cycleActuel = 0;
-            indicateurDePhase(dureeSessionTravail, "Travail", cycleActuel);
+            finDePhase(dureeSessionTravail, "Travail", cycleActuel);
             reinitialiserPastilles();
         }
     }, 1000);
