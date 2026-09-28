@@ -188,6 +188,11 @@ export function definirSon(valeur) {
     choisirSonnerie.value = valeur;
 }
 
+function arreterSon() {
+    son.pause();        
+    son.currentTime = 0; 
+}
+
 choisirSonnerie.addEventListener("change", e => {
     definirSon(e.currentTarget.value);
     storage("sonnerie", sonChoisi, "local");
@@ -214,6 +219,7 @@ function indicateurDePhase(duree, phase, cycle) {
 // fin d'une phase 
 
 function finDePhase(duree, phase, cycle) {
+    arreterSon();
     son.play().catch(erreur => {
         console.error("Impossible de jouer le son :", erreur);
     });
@@ -249,6 +255,7 @@ function decompte() {
 // alterne entre démarrer et mettre en pause
 
 btnDemarrerPause.addEventListener("click", () => {
+    arreterSon();
     if (pomodoroTimer === null) {
         decompte();
         btnDemarrerPause.innerText = "Pause";
@@ -264,6 +271,7 @@ btnDemarrerPause.addEventListener("click", () => {
 // remet tout à zéro, sur la dernière durée de travail choisie
 
 btnReset.addEventListener("click", () => {
+    arreterSon();
     cycleActuel = 0;
     indicateurDePhase(dureeSessionTravail, "Travail", cycleActuel);
     reinitialiserPastilles();
@@ -271,7 +279,7 @@ btnReset.addEventListener("click", () => {
 
 // sauvegarde l'état juste avant la fermeture ou le rechargement de la page
 
-window.addEventListener("beforeunload", () => {
+window.addEventListener("pagehide", () => {
     storage("etat", { tempsRestant, phaseActuelle, cycleActuel }, "session");
     verrouillerReglages(false);
 });
