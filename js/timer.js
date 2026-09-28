@@ -226,3 +226,24 @@ btnReset.addEventListener("click", () => {
     indicateurDePhase(dureeSessionTravail, "Travail", cycleActuel);
     reinitialiserPastilles();
 });
+
+// sauvegarder la session de l'utilisateur au moment de la fermeture ou du rechargement de la page 
+
+window.addEventListener("beforeunload", () => {
+    storage("etat", { tempsRestant, phaseActuelle, cycleActuel }, "session");
+});
+
+export function definirEtat(etat) {
+    tempsRestant = etat.tempsRestant;
+    phaseActuelle = etat.phaseActuelle;
+    cycleActuel = etat.cycleActuel;
+
+    affichageTemps(tempsRestant);
+    timerIndicateur.textContent = phaseActuelle;
+    timerCycleCount.textContent = cycleActuel;
+
+    reinitialiserPastilles();
+    for (let i = 1; i <= cycleActuel; i++) {
+        mettreAJourPastilles(i);
+    }
+}

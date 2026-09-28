@@ -15,3 +15,8 @@ restaurer("dureePauseCourte", Timer.definirDureePauseCourte);
 restaurer("dureePauseLongue", Timer.definirDureePauseLongue);
 restaurer("cycleRequis", Timer.definirDureeCycle);
 restaurer("sonnerie", Timer.definirSon);
+
+const etatSauvegarde = Storage.getInformations("etat", "session");
+if (etatSauvegarde !== null) {
+    Timer.definirEtat(etatSauvegarde);
+}
