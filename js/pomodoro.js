@@ -52,6 +52,10 @@ let tempsRestant = dureeSessionTravail;
 let phaseActuelle = "Travail";
 let cycleActuel = 0;
 
+// calcul du temps de fin
+
+let tempsDeFin = Date.now() + tempsRestant * 1000;
+
 let pomodoroTimer = null;
 
 const son = new Audio(sons[sonChoisi]);
@@ -208,6 +212,7 @@ function indicateurDePhase(duree, phase, cycle) {
     pomodoroTimer = null;
 
     tempsRestant = duree;
+    tempsDeFin = Date.now() + duree * 1000;
     affichageTemps(tempsRestant);
 
     phaseActuelle = phase;
@@ -223,6 +228,7 @@ function finDePhase(duree, phase, cycle) {
     son.play().catch(erreur => {
         console.error("Impossible de jouer le son :", erreur);
     });
+    tempsDeFin = Date.now() + duree * 1000;
     indicateurDePhase(duree, phase, cycle);
 }
 
@@ -230,7 +236,7 @@ function decompte() {
     if (pomodoroTimer !== null) return;
 
     pomodoroTimer = setInterval(() => {
-        tempsRestant--;
+        tempsRestant = Math.ceil((tempsDeFin - Date.now()) / 1000);
         affichageTemps(tempsRestant);
 
         if (phaseActuelle === "Travail" && tempsRestant <= 0) {
@@ -249,7 +255,7 @@ function decompte() {
             finDePhase(dureeSessionTravail, "Travail", cycleActuel);
             reinitialiserPastilles();
         }
-    }, 1); // TODO : remettre 1000 avant la mise en production
+    }, 1000); 
 }
 
 // alterne entre démarrer et mettre en pause
@@ -257,6 +263,7 @@ function decompte() {
 btnDemarrerPause.addEventListener("click", () => {
     arreterSon();
     if (pomodoroTimer === null) {
+        tempsDeFin = Date.now() + tempsRestant * 1000;
         decompte();
         btnDemarrerPause.innerText = "Pause";
         verrouillerReglages(true);
